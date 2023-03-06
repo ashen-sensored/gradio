@@ -1,6 +1,6 @@
 <script lang="ts">
 	// @ts-nocheck
-	import { createEventDispatcher, tick } from "svelte";
+	import { createEventDispatcher, tick, onMount } from "svelte";
 	import { BlockLabel } from "@gradio/atoms";
 	import { Image, Sketch as SketchIcon } from "@gradio/icons";
 
@@ -100,7 +100,7 @@
 	$: dispatch("drag", dragging);
 
 	function handle_image_load(event: Event) {
-		const element = event.composedPath()[0] as HTMLImageElement;
+		const element = event.currentTarget as HTMLImageElement;
 		img_width = element.naturalWidth;
 		img_height = element.naturalHeight;
 		container_height = element.getBoundingClientRect().height;
@@ -149,6 +149,15 @@
 			static_image = undefined;
 		}
 	}
+
+	onMount(async () => {
+		if (tool === "color-sketch" && value && typeof value === "string") {
+			static_image = value;
+			await tick();
+			handle_image_load({ currentTarget: value_img });
+		}
+	});
+
 </script>
 
 <BlockLabel
