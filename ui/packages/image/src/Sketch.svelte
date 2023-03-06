@@ -276,6 +276,7 @@
 	let old_width = 0;
 	let old_height = 0;
 	let old_container_height = 0;
+	let dpr_applied = false;
 
 	let handle_canvas_resize = async () => {
 		if (
@@ -308,9 +309,12 @@
 			old_height = height;
 			old_width = width;
 			old_container_height = container_height;
-		}, 100);
+		}, 10);
 
+		await tick();
+		dpr_applied = true;
 		clear();
+
 	};
 
 	$: {
@@ -330,7 +334,7 @@
 		if (!mounted) return;
 		await tick();
 
-		const dpr = window.devicePixelRatio || 1;
+		const dpr = !dpr_applied && window.devicePixelRatio || 1;
 		canvas.width = dimensions.width * (scale ? dpr : 1);
 		canvas.height = dimensions.height * (scale ? dpr : 1);
 
